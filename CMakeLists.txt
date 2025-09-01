@@ -27,8 +27,17 @@ target_include_directories(openglproject PRIVATE
 	${HEADERS_DIR}
 )
 
+if (CMAKE_EXPORT_COMPILE_COMMANDS)
+	add_custom_target(symlink_compile_commands ALL
+		COMMAND ${CMAKE_COMMAND} -E create_symlink
+			${CMAKE_BINARY_DIR}/compile_commands.json
+			${CMAKE_SOURCE_DIR}/compile_commands.json
+		DEPENDS ${CMAKE_BINARY_DIR}/compile_commands.json
+	)
+endif()
+
 # Link Libraries
-target_link_libraries(openglproject PRIVATE glfw)
+target_link_libraries(openglproject PRIVATE glfw OpenGL)
 
 # Custom target thing to run thing faster
 add_custom_target(run
