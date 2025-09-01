@@ -1,4 +1,5 @@
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <print>
 #include "window_functions.h"
 
@@ -52,7 +53,9 @@ int main()
 		return -1;
 	}
 
-	glViewport(0, 0, 800, 600);
+	int fbSizeX, fbSizeY;
+	glfwGetFramebufferSize(window, &fbSizeX, &fbSizeY);
+	glViewport(0, 0, fbSizeX, fbSizeY);
 
 	// When window is resized set the frame buffer size
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -121,8 +124,6 @@ int main()
 	// Tell open gl how to interpret the vertex data we have provided.
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
-
 
 	// Keep window open unless it should close
 	while(!glfwWindowShouldClose(window))
