@@ -7,9 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set Variables
 set(INCLUDES_DIR ${CMAKE_SOURCE_DIR}/includes)
+set(HEADERS_DIR ${CMAKE_SOURCE_DIR}/headers)
+
 set(SOURCES 
-	src/main.cpp
-	src/glad.c
+	sources/main.cpp
+	sources/glad.c
+	sources/window_functions.cpp
 )
 
 # Include Packages
@@ -19,7 +22,10 @@ find_package(glfw3 3.4 REQUIRED)
 add_executable(openglproject ${SOURCES})
 
 # Include Folders
-target_include_directories(openglproject PRIVATE ${INCLUDES_DIR})
+target_include_directories(openglproject PRIVATE 
+	${INCLUDES_DIR}
+	${HEADERS_DIR}
+)
 
 # Link Libraries
 target_link_libraries(openglproject PRIVATE glfw)
