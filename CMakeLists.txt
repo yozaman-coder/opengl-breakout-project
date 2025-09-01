@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Set Variables
 set(INCLUDES_DIR ${CMAKE_SOURCE_DIR}/includes)
 set(HEADERS_DIR ${CMAKE_SOURCE_DIR}/headers)
+set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/assets)
 
 set(SOURCES 
 	sources/main.cpp
@@ -25,6 +26,7 @@ add_executable(openglproject ${SOURCES})
 target_include_directories(openglproject PRIVATE 
 	${INCLUDES_DIR}
 	${HEADERS_DIR}
+	${ASSETS_DIR}
 )
 
 if (CMAKE_EXPORT_COMPILE_COMMANDS)
