@@ -41,12 +41,15 @@ int main()
 	// Keep window open unless it should close
 	while(!glfwWindowShouldClose(window))
 	{
-		// Swaps front and back "buffers" so that you don't see the window being rendered.
-		// Basically renders the view in the background, then when it's ready swaps it in
-		// so the user does not see the window being loaded.
-		glfwSwapBuffers(window);
+		// input
+		processInput(window);
 
-		// Looks for if any events are triggered, such as keyboard/mouse movement, window state, or callback methods.
+		// rendering commands
+		glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// check and call events and swap the buffers
+		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
