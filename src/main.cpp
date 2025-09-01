@@ -1,4 +1,5 @@
 #include <print>
+#include <glad/glad.h>
 
 int main()
 {
