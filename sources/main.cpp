@@ -114,7 +114,7 @@ int main()
 	if(!success)
 	{
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::printf("%s\n %s\n", "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n", infoLog);
+		std::printf("%s\n %s\n", "ERROR::SHADER::PROGRAM::LINK_FAILED\n", infoLog);
 	}
 
 	// Delete shaders now that we have the shader program, we don't need them.
