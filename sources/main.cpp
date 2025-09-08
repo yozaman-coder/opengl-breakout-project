@@ -224,7 +224,7 @@ int main()
 		processInput(window);
 
 		// rendering commands
-		glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.6f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		// Draw green triangle
