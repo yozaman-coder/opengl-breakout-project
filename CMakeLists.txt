@@ -14,6 +14,7 @@ set(SOURCES
 	sources/glad.c
 	sources/main.cpp
 	sources/window_functions.cpp
+	sources/stb_image_implementation.cpp
 )
 
 # Include Packages

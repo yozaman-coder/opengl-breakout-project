@@ -1,16 +1,9 @@
-#include <cmath>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <print>
 #include "window_functions.hpp"
 #include "shader_s.hpp"
-
-// Upside down triangle
-float vertices[] = {
-	0.5f, 0.5f, 0.0f,
-	-0.5f, 0.5f, 0.0f,
-	0.0f, -0.5f, 0.0f,
-};	//positions
+#include "stb/stb_image.h"
 
 int main()
 {
@@ -49,25 +42,108 @@ int main()
 	// When window is resized set the frame buffer size
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+	Shader myShaders("../assets/shaders/shader.vertexShader", "../assets/shaders/shader.fragShader");
+
+	// Upside down triangle
+	float vertices[] = {
+		// Positions		// Colors		// Texture Coordinates
+		0.5f, 0.5f, 0.0f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f, // Top-right
+		0.5f, -0.5f, 0.0f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f, // Bottom-right
+		-0.5f, -0.5f, 0.0f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f, // Bottom-left
+		-0.5f, 0.5f, 0.0f,	1.0f, 1.0f, 0.0f,	0.0f, 1.0f  // Top-left
+	};
+
+	unsigned int indices[] = {
+		0, 1, 3, // First triangle
+		1, 2, 3  // Second triangle
+	};
+
 	// Create and compile vertex shader.
-	unsigned int VBO;
-	unsigned int VAO;
+	unsigned int VBO, VAO, EBO;
 
 	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
 
 	// Create buffers and store vertices in them
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	Shader myShaders("../assets/shader.vertexShader", "../assets/shader.fragShader");
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	// Position Data Location
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	// Tell open gl how to interpret the vertex data we have provided.
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	// Color Data Location
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+	// Texture Coordinate Data Location
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	// Tell open gl how to interpret the vertex data we have provided. GL_LINE for wireframe, GL_FILL for fill
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	unsigned int textures[2];
+
+	glGenTextures(2, &textures[0]);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+
+	stbi_set_flip_vertically_on_load(true);
+
+	unsigned char *data = stbi_load("../assets/textures/container.jpg", &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+
+	stbi_image_free(data);
+
+	glGenTextures(1, &textures[1]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	data = stbi_load("../assets/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+
+	stbi_image_free(data);
+
+	myShaders.use();
+	glUniform1i(glGetUniformLocation(myShaders.ID, "texture1"), 0);
+	myShaders.setInt("texture2", 1);
 
 	// Keep window open unless it should close
 	while(!glfwWindowShouldClose(window))
@@ -79,21 +155,31 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		myShaders.use();
-		float timeValue = glfwGetTime();
-        	float greenValue = (sin(timeValue * 5.0f) / 2.0f) + 0.5f;
-		float redValue = (sin(timeValue * 1.5f) / 2.0f) + 0.5f;
-		float blueValue = (sin(timeValue * 2.0f) / 2.0f) + 0.5f;
-
-		myShaders.set4Floats("gigaColor", redValue, greenValue, blueValue, 1.0f);
 		
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures[0]);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textures[1]);
+		//float timeValue = glfwGetTime();
+        	//float greenValue = (sin(timeValue * 5.0f) / 2.0f) + 0.5f;
+		//float redValue = (sin(timeValue * 1.5f) / 2.0f) + 0.5f;
+		//float blueValue = (sin(timeValue * 2.0f) / 2.0f) + 0.5f;
+
+		//myShaders.set4Floats("gigaColor", redValue, greenValue, blueValue, 1.0f);
+		
+		myShaders.use();
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6,  GL_UNSIGNED_INT, 0);
 
 		// check and call events and swap the buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 
 	glfwTerminate();
 	return 0;
