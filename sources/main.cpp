@@ -81,9 +81,11 @@ int main()
 
 		myShaders.use();
 		float timeValue = glfwGetTime();
-        	float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        	float greenValue = (sin(timeValue * 5.0f) / 2.0f) + 0.5f;
+		float redValue = (sin(timeValue * 1.5f) / 2.0f) + 0.5f;
+		float blueValue = (sin(timeValue * 2.0f) / 2.0f) + 0.5f;
 
-		myShaders.set4Floats("gigaColor", 0.0f, greenValue, 0.0f, 1.0f);
+		myShaders.set4Floats("gigaColor", redValue, greenValue, blueValue, 1.0f);
 		
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
