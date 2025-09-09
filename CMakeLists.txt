@@ -11,8 +11,8 @@ set(HEADERS_DIR ${CMAKE_SOURCE_DIR}/headers)
 set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/assets)
 
 set(SOURCES 
-	sources/main.cpp
 	sources/glad.c
+	sources/main.cpp
 	sources/window_functions.cpp
 )
 
@@ -29,20 +29,14 @@ target_include_directories(openglproject PRIVATE
 	${ASSETS_DIR}
 )
 
-if (CMAKE_EXPORT_COMPILE_COMMANDS)
-	add_custom_target(symlink_compile_commands ALL
-		COMMAND ${CMAKE_COMMAND} -E create_symlink
-			${CMAKE_BINARY_DIR}/compile_commands.json
-			${CMAKE_SOURCE_DIR}/compile_commands.json
-		DEPENDS ${CMAKE_BINARY_DIR}/compile_commands.json
-	)
-endif()
-
 # Link Libraries
 target_link_libraries(openglproject PRIVATE glfw OpenGL)
 
 # Custom target thing to run thing faster
 add_custom_target(run
+	COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${CMAKE_BINARY_DIR}/compile_commands.json
+            ${CMAKE_SOURCE_DIR}/compile_commands.json
 	COMMAND openglproject
 	DEPENDS openglproject
 	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
