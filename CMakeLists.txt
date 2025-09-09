@@ -30,8 +30,10 @@ target_include_directories(openglproject PRIVATE
 	${ASSETS_DIR}
 )
 
+find_package(OpenGL REQUIRED)
+
 # Link Libraries
-target_link_libraries(openglproject PRIVATE glfw OpenGL)
+target_link_libraries(openglproject PRIVATE glfw OpenGL::GL)
 
 # Custom target thing to run thing faster
 add_custom_target(run
