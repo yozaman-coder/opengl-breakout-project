@@ -4,6 +4,25 @@
 #include "window_functions.hpp"
 #include "shader_s.hpp"
 #include "stb/stb_image.h"
+#include <filesystem>
+#ifdef _WIN32
+#include <Windows.h>
+#endif // _WIN32
+
+static std::filesystem::path getPath()
+{
+#ifdef  _WIN32
+	//Get EXE path on windows
+	char buffer[MAX_PATH];
+	GetModuleFileNameA(NULL, buffer, MAX_PATH);
+	return std::filesystem::path(buffer).parent_path().append("../../");
+#elif defined(__linux__) || defined(__unix__)
+	return std::filesystem::current_path();
+#else
+	std::cout << "Unknown OS" << std::endl;
+	throw;
+#endif
+}
 
 int main()
 {
@@ -44,7 +63,6 @@ int main()
 
 	Shader myShaders("../assets/shaders/shader.vertexShader", "../assets/shaders/shader.fragShader");
 
-	// Upside down triangle
 	float vertices[] = {
 		// Positions		// Colors		// Texture Coordinates
 		0.5f, 0.5f, 0.0f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f, // Top-right
@@ -104,7 +122,9 @@ int main()
 
 	stbi_set_flip_vertically_on_load(true);
 
-	unsigned char *data = stbi_load("../assets/textures/container.jpg", &width, &height, &nrChannels, 0);
+	std::string pathToTexture = getPath().append("assets/textures/container.jpg").string();
+
+	unsigned char* data = stbi_load(pathToTexture.c_str(), &width, &height, &nrChannels, 0);
 
 	if (data)
 	{
@@ -127,7 +147,9 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	data = stbi_load("../assets/textures/awesomeface.png", &width, &height, &nrChannels, 0);
+	pathToTexture = getPath().append("assets/textures/awesomeface.png").string();
+
+	data = stbi_load(pathToTexture.c_str(), &width, &height, &nrChannels, 0);
 
 	if (data)
 	{
@@ -154,7 +176,6 @@ int main()
 		// rendering commands
 		glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
 		
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
