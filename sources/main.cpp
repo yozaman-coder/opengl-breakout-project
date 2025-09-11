@@ -17,7 +17,7 @@ static std::filesystem::path getPath()
 	GetModuleFileNameA(NULL, buffer, MAX_PATH);
 	return std::filesystem::path(buffer).parent_path().append("../../");
 #elif defined(__linux__) || defined(__unix__)
-	return std::filesystem::current_path();
+	return std::filesystem::current_path().append("../");
 #else
 	std::cout << "Unknown OS" << std::endl;
 	throw;
@@ -124,6 +124,7 @@ int main()
 
 	std::string pathToTexture = getPath().append("assets/textures/container.jpg").string();
 
+	std::cout << pathToTexture << std::endl;
 	unsigned char* data = stbi_load(pathToTexture.c_str(), &width, &height, &nrChannels, 0);
 
 	if (data)
